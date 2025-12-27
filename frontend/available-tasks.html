@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доступні завдання | Єврокод</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <h2>Доступні завдання</h2>
+        </div>
+        
+        <div class="nav-links">
+            <a href="technician-dashboard.html">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <a href="#" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Оновити
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="color: #1a5faa; margin-bottom: 0.5rem;">
+            <i class="fas fa-hand-paper"></i> Доступні для прийняття завдання
+        </h1>
+        <p style="color: #666; margin-bottom: 2rem;">
+            Оберіть завдання, яке ви хочете взяти на себе
+        </p>
+        
+        <!-- Статистика -->
+        <div class="tech-stats" style="margin-bottom: 2rem;">
+            <div style="background: #e8f4fc; padding: 1rem; border-radius: 10px; text-align: center;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #2c3e50;">Доступні зараз</h3>
+                <div style="font-size: 2rem; font-weight: bold; color: #1a5faa;" id="availableCount">0</div>
+            </div>
+            
+            <div style="background: #f0f7ff; padding: 1rem; border-radius: 10px; text-align: center;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #2c3e50;">Ваші активні</h3>
+                <div style="font-size: 2rem; font-weight: bold; color: #3498db;" id="myActiveCount">0</div>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 10px; text-align: center;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #2c3e50;">Усі завдання</h3>
+                <div style="font-size: 2rem; font-weight: bold; color: #2c3e50;" id="totalCount">0</div>
+            </div>
+        </div>
+        
+        <!-- Інформаційний блок -->
+        <div class="card" style="background: #f0f7ff; margin-bottom: 2rem;">
+            <h3 style="color: #1a5faa; margin-bottom: 0.5rem;">
+                <i class="fas fa-info-circle"></i> Як працює система
+            </h3>
+            <ul style="margin: 0; padding-left: 1.5rem; color: #2c3e50;">
+                <li>Тут відображаються завдання, які ще не мають призначеного техніка</li>
+                <li>Натисніть "Прийняти завдання" щоб взяти його на себе</li>
+                <li>Після прийняття завдання з'явиться у вашому списку активних завдань</li>
+                <li>Ви можете прийняти одразу декілька завдань</li>
+                <li>Система автоматично оновлюється кожні 30 секунд</li>
+            </ul>
+        </div>
+        
+        <!-- Список доступних завдань -->
+        <div id="availableTasksContainer">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p>Завантаження доступних завдань...</p>
+            </div>
+        </div>
+        
+        <!-- Якщо немає завдань -->
+        <div id="noTasksMessage" class="card" style="display: none; text-align: center;">
+            <i class="fas fa-check-circle fa-3x" style="color: #2ecc71; margin-bottom: 1rem;"></i>
+            <h3 style="color: #2c3e50;">Немає доступних завдань</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;">
+                Всі завдання вже розподілені між техніками.<br>
+                Спробуйте оновити сторінку або створіть нову заявку.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn btn-primary" onclick="window.location.href='create-request.html'">
+                    <i class="fas fa-plus"></i> Створити заявку
+                </button>
+                <button class="btn btn-outline" onclick="refreshTasks()">
+                    <i class="fas fa-sync-alt"></i> Оновити
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    
+    <script>
+        // Поточний технік
+        let currentTechnician = null;
+        
+        // Ініціалізація при завантаженні
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Перевірка авторизації
+            const technician = JSON.parse(localStorage.getItem('technician'));
+            if (!technician) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentTechnician = technician;
+            
+            // Налаштовуємо кнопку оновлення
+            document.getElementById('refreshBtn').addEventListener('click', refreshTasks);
+            
+            // Завантажуємо доступні завдання
+            await loadAvailableTasks();
+            
+            // Завантажуємо статистику техніка
+            await loadTechnicianStats();
+            
+            // Автооновлення кожні 30 секунд
+            setInterval(async () => {
+                await loadAvailableTasks();
+                await loadTechnicianStats();
+            }, 30000);
+        });
+        
+        // Завантаження доступних завдань
+        async function loadAvailableTasks() {
+            try {
+                const response = await fetch('http://localhost:5000/api/tasks/available');
+                if (!response.ok) throw new Error('API не відповідає');
+                
+                const tasks = await response.json();
+                
+                // Оновлюємо лічильник
+                document.getElementById('availableCount').textContent = tasks.length;
+                
+                // Показуємо/приховуємо повідомлення про відсутність завдань
+                const noTasksMessage = document.getElementById('noTasksMessage');
+                const container = document.getElementById('availableTasksContainer');
+                
+                if (tasks.length === 0) {
+                    container.style.display = 'none';
+                    noTasksMessage.style.display = 'block';
+                } else {
+                    container.style.display = 'block';
+                    noTasksMessage.style.display = 'none';
+                    
+                    // Відображаємо завдання
+                    displayAvailableTasks(tasks);
+                }
+                
+            } catch (error) {
+                console.error('Помилка завантаження доступних завдань:', error);
+                
+                // Демо-дані
+                const demoTasks = getDemoAvailableTasks();
+                document.getElementById('availableCount').textContent = demoTasks.length;
+                displayAvailableTasks(demoTasks);
+            }
+        }
+        
+        // Завантаження статистики техніка
+        async function loadTechnicianStats() {
+            if (!currentTechnician) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/technician/${currentTechnician.id}/tasks`);
+                if (!response.ok) throw new Error('API не відповідає');
+                
+                const data = await response.json();
+                
+                // Оновлюємо статистику
+                document.getElementById('myActiveCount').textContent = data.stats.active || 0;
+                document.getElementById('totalCount').textContent = 
+                    (data.stats.active || 0) + (data.stats.completed || 0) + (data.stats.available || 0);
+                
+            } catch (error) {
+                console.error('Помилка завантаження статистики:', error);
+                
+                // Демо-статистика
+                document.getElementById('myActiveCount').textContent = '2';
+                document.getElementById('totalCount').textContent = '15';
+            }
+        }
+        
+        // Функція для оновлення завдань
+        async function refreshTasks() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const originalHtml = refreshBtn.innerHTML;
+            
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            refreshBtn.disabled = true;
+            
+            await Promise.all([
+                loadAvailableTasks(),
+                loadTechnicianStats()
+            ]);
+            
+            refreshBtn.innerHTML = originalHtml;
+            refreshBtn.disabled = false;
+            
+            showNotification('Список завдань оновлено', 'success');
+        }
+        
+        // Функція для відображення доступних завдань
+        function displayAvailableTasks(tasks) {
+            const container = document.getElementById('availableTasksContainer');
+            if (!container) return;
+            
+            let html = '';
+            
+            tasks.forEach(task => {
+                // Визначаємо пріоритет
+                let priorityBadge = '';
+                if (task.priority === 'high') {
+                    priorityBadge = '<span class="status-badge" style="background: #fde8e8; color: #e74c3c; margin-left: 0.5rem;">Високий</span>';
+                } else if (task.priority === 'urgent') {
+                    priorityBadge = '<span class="status-badge" style="background: #fde8e8; color: #e74c3c; margin-left: 0.5rem;">🔥 Терміновий</span>';
+                }
+                
+                // Визначаємо тип пристрою
+                const deviceType = task.device_type || 'Касовий апарат';
+                const deviceIcon = deviceType.includes('кас') ? 'fa-cash-register' : 
+                                 deviceType.includes('фіс') ? 'fa-receipt' : 'fa-laptop';
+                
+                html += `
+                <div class="task-card" data-task-id="${task.id}">
+                    <div class="task-header">
+                        <div>
+                            <h3 style="margin: 0 0 0.5rem 0;">
+                                Завдання #${task.id}
+                                ${priorityBadge}
+                            </h3>
+                            <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                                <i class="fas fa-building"></i> ${task.company_name || 'Клієнт'}
+                            </p>
+                        </div>
+                        <span class="status-badge status-new">Доступне</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                        <div>
+                            <p style="margin: 0 0 0.5rem 0;"><strong><i class="fas ${deviceIcon}"></i> Пристрій:</strong></p>
+                            <p style="margin: 0; color: #666;">${task.model || 'Не вказано'}</p>
+                            ${task.serial_number ? `<small style="color: #999;">${task.serial_number}</small>` : ''}
+                        </div>
+                        
+                        <div>
+                            <p style="margin: 0 0 0.5rem 0;"><strong><i class="fas fa-map-marker-alt"></i> Адреса:</strong></p>
+                            <p style="margin: 0; color: #666;">${task.address || 'Не вказано'}</p>
+                        </div>
+                        
+                        <div>
+                            <p style="margin: 0 0 0.5rem 0;"><strong><i class="fas fa-phone"></i> Контакти:</strong></p>
+                            <p style="margin: 0; color: #666;">${task.contact_phone || 'Не вказано'}</p>
+                        </div>
+                    </div>
+                    
+                    <p style="margin: 1rem 0;"><strong><i class="fas fa-file-alt"></i> Опис проблеми:</strong></p>
+                    <p style="color: #666; background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0;">
+                        ${task.description || 'Без детального опису'}
+                    </p>
+                    
+                    <div class="task-actions">
+                        <button class="btn btn-primary" onclick="takeAvailableTask(${task.id})">
+                            <i class="fas fa-hand-paper"></i> Прийняти завдання
+                        </button>
+                        
+                        <button class="btn btn-outline" onclick="viewTaskDetails(${task.id})">
+                            <i class="fas fa-info-circle"></i> Детальніше
+                        </button>
+                        
+                        ${task.contact_phone && task.contact_phone !== 'Не вказано' ? `
+                        <button class="btn btn-outline" onclick="callClient('${task.contact_phone}')">
+                            <i class="fas fa-phone"></i> Зателефонувати
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Демо-дані для доступних завдань
+        function getDemoAvailableTasks() {
+            return [
+                {
+                    id: 1025,
+                    company_name: 'ТОВ «Єврокод»',
+                    address: 'м. Київ, вул. Тестова, 1',
+                    contact_phone: '+380501234567',
+                    model: 'АТОЛ 90F',
+                    serial_number: 'KAS-2024-003',
+                    device_type: 'Касовий апарат',
+                    description: 'Повірка касового апарата, калібровка ваг, перевірка чекового принтера',
+                    priority: 'normal',
+                    created_at: '2024-12-10T10:30:00'
+                },
+                {
+                    id: 1027,
+                    company_name: 'Магазин «Електроніка»',
+                    address: 'м. Київ, вул. Технічна, 8',
+                    contact_phone: '+380501112233',
+                    model: 'MINI MARKET MM-300',
+                    serial_number: 'KAS-2024-005',
+                    device_type: 'Касовий апарат',
+                    description: 'Налаштування підключення до 1С, конфігурація товарної бази',
+                    priority: 'high',
+                    created_at: '2024-12-10T09:15:00'
+                },
+                {
+                    id: 1028,
+                    company_name: 'Кав\'ярня «Аромат»',
+                    address: 'м. Київ, вул. Кавова, 12',
+                    contact_phone: '+380632223344',
+                    model: 'RICH 1800K',
+                    serial_number: 'FIS-2024-006',
+                    device_type: 'Фіскальний реєстратор',
+                    description: 'Заміна термопаперу, чистка механізмів, перевірка з\'єднань',
+                    priority: 'normal',
+                    created_at: '2024-12-09T16:45:00'
+                }
+            ];
+        }
+        
+        // Глобальні функції
+        window.refreshTasks = refreshTasks;
+    </script>
+</body>
+</html>

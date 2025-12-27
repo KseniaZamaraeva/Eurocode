@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Звіти | Єврокод</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .report-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-5px);
+            border-color: #1a5faa;
+        }
+        
+        .report-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: #1a5faa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .date-filter {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <div>
+                <h2>Звіти</h2>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Аналітика та статистика</p>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="dashboard.html">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 1.5rem;">
+            <i class="fas fa-file-alt"></i> Звіти та аналітика
+        </h1>
+        
+        <div class="date-filter">
+            <h3><i class="fas fa-calendar-alt"></i> Фільтр за періодом</h3>
+            <div class="filter-group">
+                <select id="periodSelect" class="form-control" style="width: auto;">
+                    <option value="today">Сьогодні</option>
+                    <option value="week">Цей тиждень</option>
+                    <option value="month" selected>Цей місяць</option>
+                    <option value="quarter">Цей квартал</option>
+                    <option value="year">Цей рік</option>
+                </select>
+                
+                <input type="date" id="startDate" class="form-control" style="width: auto;">
+                <span>до</span>
+                <input type="date" id="endDate" class="form-control" style="width: auto;">
+                
+                <button class="btn btn-primary" onclick="generateReport()">
+                    <i class="fas fa-play"></i> Застосувати
+                </button>
+            </div>
+        </div>
+        
+        <div class="report-cards">
+            <div class="report-card" onclick="generateSummaryReport()">
+                <div class="report-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h3>Зведений звіт</h3>
+                <p>Загальна статистика по заявках, клієнтах та техніках</p>
+                <div style="color: #1a5faa; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> PDF, Excel
+                </div>
+            </div>
+            
+            <div class="report-card" onclick="generateRequestsReport()">
+                <div class="report-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>Звіт по заявках</h3>
+                <p>Детальний аналіз сервісних заявок за період</p>
+                <div style="color: #1a5faa; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> PDF, Excel
+                </div>
+            </div>
+            
+            <div class="report-card" onclick="generateClientsReport()">
+                <div class="report-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Звіт по клієнтах</h3>
+                <p>Активність клієнтів, кількість звернень</p>
+                <div style="color: #1a5faa; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> PDF, Excel
+                </div>
+            </div>
+            
+            <div class="report-card" onclick="generateTechniciansReport()">
+                <div class="report-icon">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <h3>Звіт по техніках</h3>
+                <p>Продуктивність техніків, час виконання</p>
+                <div style="color: #1a5faa; margin-top: 1rem;">
+                    <i class="fas fa-download"></i> PDF, Excel
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 2rem;">
+            <h3><i class="fas fa-history"></i> Останні згенеровані звіти</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Назва звіту</th>
+                            <th>Тип</th>
+                            <th>Період</th>
+                            <th>Дата створення</th>
+                            <th>Розмір</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsHistory">
+                        <tr>
+                            <td>Щомісячний зведений звіт</td>
+                            <td><span class="status-badge status-completed">PDF</span></td>
+                            <td>Грудень 2024</td>
+                            <td>10.12.2024 14:30</td>
+                            <td>245 KB</td>
+                            <td>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function generateReport() {
+            const period = document.getElementById('periodSelect').value;
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            
+            alert(`Генерація звіту за період: ${period}\nФункція в розробці`);
+        }
+        
+        function generateSummaryReport() {
+            alert('Генерація зведеного звіту\nФункція в розробці');
+        }
+        
+        function generateRequestsReport() {
+            alert('Генерація звіту по заявках\nФункція в розробці');
+        }
+        
+        function generateClientsReport() {
+            alert('Генерація звіту по клієнтах\nФункція в розробці');
+        }
+        
+        function generateTechniciansReport() {
+            alert('Генерація звіту по техніках\nФункція в розробці');
+        }
+        
+        // Встановлюємо сьогоднішню дату за замовчуванням
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        });
+    </script>
+</body>
+</html>

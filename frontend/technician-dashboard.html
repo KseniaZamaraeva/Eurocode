@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель техніка | Єврокод</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка техніка -->
+    <div class="tech-header">
+        <div class="container">
+            <div class="tech-info">
+                <div class="tech-avatar" id="techAvatar">Т</div>
+                <div>
+                    <h1 id="techName">Завантаження...</h1>
+                    <p id="techEmail">Технік сервісної служби</p>
+                </div>
+            </div>
+            
+            <div class="tech-stats">
+                <div>
+                    <h3>Активні завдання</h3>
+                    <div style="font-size: 2rem; font-weight: bold;" id="activeCount">0</div>
+                </div>
+                <div>
+                    <h3>В роботі</h3>
+                    <div style="font-size: 2rem; font-weight: bold;" id="progressCount">0</div>
+                </div>
+                <div>
+                    <h3>Завершені</h3>
+                    <div style="font-size: 2rem; font-weight: bold;" id="completedCount">0</div>
+                </div>
+                <div>
+                    <h3>Доступні</h3>
+                    <div style="font-size: 2rem; font-weight: bold;" id="availableCount">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навігація -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h2>Панель техніка</h2>
+        </div>
+        
+        <div class="nav-links">
+            <a href="technician-dashboard.html" class="active">
+                <i class="fas fa-home"></i> Головна
+            </a>
+            <a href="available-tasks.html">
+                <i class="fas fa-tasks"></i> Доступні завдання
+            </a>
+            <a href="create-request.html">
+                <i class="fas fa-plus-circle"></i> Нова заявка
+            </a>
+            <a href="#" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Вийти
+            </a>
+        </div>
+    </nav>
+
+    <!-- Основний контент -->
+    <div class="container">
+        <!-- Швидкі дії -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <a href="create-request.html" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Створити нову заявку
+            </a>
+            <a href="available-tasks.html" class="btn btn-success">
+                <i class="fas fa-hand-paper"></i> Знайти завдання
+            </a>
+            <button class="btn btn-outline" onclick="showHistory()">
+                <i class="fas fa-history"></i> Історія
+            </button>
+            <button class="btn btn-outline" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Оновити
+            </button>
+        </div>
+        
+        <!-- Активні завдання -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem; color: #1a5faa;">
+                <i class="fas fa-clipboard-list"></i> Мої поточні завдання
+            </h2>
+            
+            <div id="tasksContainer">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p>Завантаження завдань...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Історія (прихована за замовчуванням) -->
+        <div class="card" id="historyCard" style="display: none;">
+            <h2 style="margin-bottom: 1.5rem; color: #1a5faa;">
+                <i class="fas fa-history"></i> Історія завдань
+            </h2>
+            
+            <div id="historyContainer">
+                <!-- Історія завантажується тут -->
+            </div>
+        </div>
+        
+        <!-- Інструменти техніка -->
+        <div class="card" style="background: #f8fafc;">
+            <h3 style="color: #1a5faa; margin-bottom: 1rem;">
+                <i class="fas fa-toolbox"></i> Інструменти техніка
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <div style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="width: 50px; height: 50px; background: #3498db; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <strong>Фото-звіт</strong>
+                    <p style="font-size: 0.9rem; color: #666; margin: 0.3rem 0;">Додати фото виконаних робіт</p>
+                    <button class="btn btn-small btn-outline" onclick="uploadPhoto()">Використати</button>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="width: 50px; height: 50px; background: #2ecc71; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                    <strong>Підпис клієнта</strong>
+                    <p style="font-size: 0.9rem; color: #666; margin: 0.3rem 0;">Отримати підпис про виконання</p>
+                    <button class="btn btn-small btn-outline" onclick="getSignature()">Використати</button>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="width: 50px; height: 50px; background: #f39c12; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <strong>Запчастини</strong>
+                    <p style="font-size: 0.9rem; color: #666; margin: 0.3rem 0;">Замовити необхідні запчастини</p>
+                    <button class="btn btn-small btn-outline" onclick="requestParts()">Використати</button>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="width: 50px; height: 50px; background: #9b59b6; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <strong>Маршрут</strong>
+                    <p style="font-size: 0.9rem; color: #666; margin: 0.3rem 0;">Побудувати маршрут виїздів</p>
+                    <button class="btn btn-small btn-outline" onclick="showRoute()">Використати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Підключення основного скрипту -->
+    <script src="script.js"></script>
+    
+    <!-- Додатковий скрипт для dashboard -->
+    <script>
+        // Функція для оновлення даних
+        function refreshData() {
+            const refreshBtn = document.querySelector('button[onclick="refreshData()"]');
+            const originalHtml = refreshBtn.innerHTML;
+            
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оновлення...';
+            refreshBtn.disabled = true;
+            
+            setTimeout(() => {
+                loadTechnicianTasks();
+                refreshBtn.innerHTML = originalHtml;
+                refreshBtn.disabled = false;
+                showNotification('Дані оновлено', 'success');
+            }, 1000);
+        }
+        
+        // Функція для показу історії
+        function showHistory() {
+            const historyCard = document.getElementById('historyCard');
+            const isVisible = historyCard.style.display === 'block';
+            
+            historyCard.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                // Якщо історія ще не завантажена
+                if (!document.getElementById('historyContainer').innerHTML.trim()) {
+                    // Тут можна завантажити історію
+                    console.log('Завантаження історії...');
+                }
+            }
+        }
+        
+        // Функції для інструментів
+        function uploadPhoto() {
+            alert('Завантаження фото-звіту\n\nФункція в розробці');
+        }
+        
+        function getSignature() {
+            alert('Отримання підпису клієнта\n\nФункція в розробці');
+        }
+        
+        function requestParts() {
+            alert('Замовлення запчастин\n\nФункція в розробці');
+        }
+        
+        function showRoute() {
+            alert('Побудова маршруту виїздів\n\nФункція в розробці');
+        }
+        
+        // Ініціалізація при завантаженні
+        document.addEventListener('DOMContentLoaded', function() {
+            // Додаємо інформацію про останнє оновлення
+            const lastUpdate = document.createElement('div');
+            lastUpdate.style.cssText = 'text-align: center; margin-top: 2rem; color: #666; font-size: 0.9rem;';
+            lastUpdate.innerHTML = `<i class="fas fa-clock"></i> Останнє оновлення: <span id="lastUpdateTime">${new Date().toLocaleTimeString('uk-UA')}</span>`;
+            
+            const container = document.querySelector('.container');
+            if (container) {
+                container.appendChild(lastUpdate);
+            }
+            
+            // Оновлюємо час кожну хвилину
+            setInterval(() => {
+                const timeElement = document.getElementById('lastUpdateTime');
+                if (timeElement) {
+                    timeElement.textContent = new Date().toLocaleTimeString('uk-UA');
+                }
+            }, 60000);
+        });
+    </script>
+</body>
+</html>

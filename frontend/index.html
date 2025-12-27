@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервісна система техніків | Єврокод</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container" style="background: linear-gradient(135deg, #1a5faa 0%, #3498db 100%);">
+        <div class="login-box" style="max-width: 800px;">
+            <div class="login-logo">
+                <div class="logo-icon" style="width: 80px; height: 80px; font-size: 2.2rem;">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div>
+                    <h1 style="color: #1a5faa; margin-bottom: 0.5rem;">Сервісна система Єврокод</h1>
+                    <p style="color: #666; font-size: 1.1rem;">Панель управління для сервісних техніків</p>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 3rem 0;">
+                <!-- Ліва колонка - інформація -->
+                <div>
+                    <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">
+                        <i class="fas fa-info-circle"></i> Про систему
+                    </h2>
+                    
+                    <div class="card" style="background: #f8fafc;">
+                        <h3 style="color: #1a5faa; margin-bottom: 1rem;">
+                            <i class="fas fa-check-circle"></i> Можливості системи
+                        </h3>
+                        <ul style="margin: 0; padding-left: 1.5rem; color: #2c3e50;">
+                            <li>Перегляд та прийняття завдань</li>
+                            <li>Створення нових сервісних заявок</li>
+                            <li>Відстеження статусів виконання</li>
+                            <li>Історія завершених завдань</li>
+                            <li>Додавання фото-звітів</li>
+                            <li>Управління запчастинами</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card" style="background: #f0f7ff; margin-top: 1.5rem;">
+                        <h3 style="color: #1a5faa; margin-bottom: 1rem;">
+                            <i class="fas fa-users"></i> Для кого система
+                        </h3>
+                        <p style="color: #2c3e50; margin: 0;">
+                            Система розроблена для сервісних техніків компанії <strong>Єврокод</strong>, 
+                            які займаються обслуговуванням касових апаратів та фіскальних реєстраторів.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Права колонка - вхід -->
+                <div>
+                    <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> Вхід до системи
+                    </h2>
+                    
+                    <div class="card" style="text-align: center;">
+                        <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #3498db, #2980b9); 
+                                    border-radius: 50%; margin: 0 auto 1.5rem; color: white; 
+                                    display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        
+                        <h3 style="color: #2c3e50; margin-bottom: 1rem;">Вхід для техніків</h3>
+                        <p style="color: #666; margin-bottom: 1.5rem;">
+                            Використовуйте будь-який email та пароль системи для входу
+                        </p>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <p style="margin: 0 0 0.5rem 0; color: #2c3e50;"><strong>Пароль системи:</strong></p>
+                            <div style="background: #e8f4fc; padding: 0.8rem; border-radius: 8px; font-family: monospace; font-size: 1.1rem;">
+                                eurocode2024
+                            </div>
+                        </div>
+                        
+                        <a href="login.html" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem; width: 100%;">
+                            <i class="fas fa-sign-in-alt"></i> Перейти до входу
+                        </a>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <p style="color: #666; margin: 0;">
+                            <i class="fas fa-question-circle"></i> Потрібна допомога? 
+                            <a href="mailto:support@eurocode.com.ua" style="color: #3498db;">Зв'яжіться з підтримкою</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Стандартні техніки -->
+            <div class="card" style="margin-top: 2rem; background: #f8fafc;">
+                <h3 style="color: #1a5faa; margin-bottom: 1.5rem; text-align: center;">
+                    <i class="fas fa-user-cog"></i> Наші техніки
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: #3498db; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">А</div>
+                        <strong>Андрій Технік</strong>
+                        <div style="font-size: 0.85rem; color: #666;">andrii@eurocode.ua</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: #3498db; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">С</div>
+                        <strong>Сергій Майстер</strong>
+                        <div style="font-size: 0.85rem; color: #666;">sergii@eurocode.ua</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: #3498db; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">М</div>
+                        <strong>Максим Спеціаліст</strong>
+                        <div style="font-size: 0.85rem; color: #666;">maksym@eurocode.ua</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: #2ecc71; border-radius: 50%; margin: 0 auto 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">+</div>
+                        <strong>Ваш обліковий запис</strong>
+                        <div style="font-size: 0.85rem; color: #666;">ваш_email@приклад.ua</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p>ТОВ «Єврокод» — автоматизація бізнесу під ключ</p>
+                <p>Касові апарати, фіскальні реєстратори, сервісне обслуговування</p>
+                <p>© 2025 Всі права захищені</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

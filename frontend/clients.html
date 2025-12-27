@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клієнти | Єврокод</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div>
+                <h2>Клієнти</h2>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Система управління заявками</p>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="dashboard.html">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <a href="#" onclick="addNewClient()">
+                <i class="fas fa-user-plus"></i> Додати
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 1.5rem;">
+            <i class="fas fa-building"></i> Список клієнтів
+        </h1>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Компанія</th>
+                        <th>Адреса</th>
+                        <th>Телефон</th>
+                        <th>Email</th>
+                        <th>Дата реєстрації</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTable">
+                    <!-- Дані завантажуються через JS -->
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-spinner fa-spin"></i> Завантаження даних...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 2rem; display: flex; justify-content: space-between;">
+            <div>
+                <p>Загальна кількість клієнтів: <strong id="totalClients">0</strong></p>
+            </div>
+            <button class="btn btn-primary" onclick="loadClients()">
+                <i class="fas fa-sync-alt"></i> Оновити
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        async function loadClients() {
+            try {
+                const response = await fetch('http://localhost:5000/api/clients');
+                const clients = await response.json();
+                
+                const tbody = document.getElementById('clientsTable');
+                tbody.innerHTML = '';
+                
+                clients.forEach(client => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${client.id}</td>
+                        <td><strong>${client.company_name}</strong></td>
+                        <td>${client.address || 'Не вказано'}</td>
+                        <td>${client.contact_phone || 'Не вказано'}</td>
+                        <td>${client.contact_email || 'Не вказано'}</td>
+                        <td>${new Date(client.created_at).toLocaleDateString('uk-UA')}</td>
+                        <td>
+                            <button class="btn btn-outline" onclick="viewClient(${client.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                document.getElementById('totalClients').textContent = clients.length;
+                
+            } catch (error) {
+                console.error('Помилка завантаження клієнтів:', error);
+                document.getElementById('clientsTable').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i> Помилка завантаження даних
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function viewClient(id) {
+            alert(`Перегляд клієнта #${id}\nФункція в розробці`);
+        }
+        
+        function addNewClient() {
+            alert('Додавання нового клієнта\nФункція в розробці');
+        }
+        
+        // Завантажуємо клієнтів при відкритті сторінки
+        document.addEventListener('DOMContentLoaded', loadClients);
+    </script>
+</body>
+</html>

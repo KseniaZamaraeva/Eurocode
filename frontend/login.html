@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід | Сервісна система Єврокод</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo i {
+            font-size: 50px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .logo h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-accounts {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .test-accounts h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .password-hint {
+            background: #e8f4fc;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-tools"></i>
+            <h1>Сервісна система Єврокод</h1>
+            <p>Вхід для техніків</p>
+        </div>
+        
+        <div class="password-hint">
+            🔑 Пароль системи: eurocode2024
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="ваш_email@приклад.ua" required value="andrii@eurocode.ua">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль системи:</label>
+                <input type="password" id="password" placeholder="Введіть пароль системи" required value="eurocode2024">
+            </div>
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-sign-in-alt"></i> Увійти
+            </button>
+        </form>
+        
+        <div id="message" class="alert"></div>
+        
+        <div class="test-accounts">
+            <h4>💡 Облікові записи:</h4>
+            <p><strong>Андрій Технік:</strong> andrii@eurocode.ua</p>
+            <p><strong>Сергій Майстер:</strong> sergii@eurocode.ua</p>
+            <p><strong>Максим Спеціаліст:</strong> maksym@eurocode.ua</p>
+            <p><strong>Або будь-який інший email</strong> з паролем системи</p>
+        </div>
+        
+        <div class="back-link">
+            <a href="index.html">← На головну сторінку</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Очистити повідомлення
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'alert';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Зберегти дані користувача
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Показати успіх
+                    messageDiv.textContent = '✅ Успішний вхід! Перенаправлення...';
+                    messageDiv.className = 'alert success';
+                    messageDiv.style.display = 'block';
+                    
+                    // Перенаправити на панель управління
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    // Показати помилку
+                    messageDiv.textContent = '❌ ' + (data.message || 'Помилка входу');
+                    messageDiv.className = 'alert error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.textContent = '❌ Помилка з\'єднання з сервером';
+                messageDiv.className = 'alert error';
+                messageDiv.style.display = 'block';
+                console.error('Login error:', error);
+            }
+        });
+        
+        // Автозаповнення для тестування
+        document.addEventListener('DOMContentLoaded', function() {
+            // Автоматично заповнити тестові дані
+            document.getElementById('email').value = 'andrii@eurocode.ua';
+            document.getElementById('password').value = 'eurocode2024';
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>
